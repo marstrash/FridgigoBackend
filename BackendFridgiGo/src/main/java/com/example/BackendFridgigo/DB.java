@@ -1,4 +1,4 @@
-package com.example.BackendFridgiGo;
+package com.example.BackendFridgigo;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -9,10 +9,12 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 import java.util.ArrayList;
 
+
+
 public class DB {
 
     //Ruft ein Rezeptobjekt nach seiner RezeptID aus der Datenbank ab
-    public static rezept callRezeptById(Integer input) {
+    public static Rezept2 callRezeptById(Integer input) {
         StandardServiceRegistry ssr = new StandardServiceRegistryBuilder().configure().build();
 
         Metadata meta = new MetadataSources(ssr).getMetadataBuilder().build();
@@ -21,13 +23,13 @@ public class DB {
 
 
         session.beginTransaction();
-        Rezept rezept = session.load(Rezept.class, input);
+        Rezept2 rezept = session.load(Rezept2.class, input);
         session.flush();
         return rezept;
     }
 
     //Ruft eine Liste aller gespeicherten Rezepte aus der Datenbank ab
-    public static ArrayList<rezept> callAllRezept() {
+    public static ArrayList<Rezept2> callAllRezepte() {
         StandardServiceRegistry ssr = new StandardServiceRegistryBuilder().configure().build();
 
         Metadata meta = new MetadataSources(ssr).getMetadataBuilder().build();
@@ -35,7 +37,7 @@ public class DB {
         Session session = factory.openSession();
 
         session.beginTransaction();
-        ArrayList<rezept> entries = (ArrayList<rezept>) session.createCriteria(Rezept.class).list();
+        ArrayList<Rezept2> entries = (ArrayList<Rezept>) session.createCriteria(Rezept.class).list();
         session.flush();
         return entries;
     }
@@ -70,7 +72,7 @@ public class DB {
     }
 
     //Ruft ein Kategorieobjekt nach seiner rezeptid aus der Datenbank ab
-    public static Kategorie callkategorieById(Integer input) {
+    public static <KData> KData callkategorieById(Integer input) {
         StandardServiceRegistry ssr = new StandardServiceRegistryBuilder().configure().build();
 
         Metadata meta = new MetadataSources(ssr).getMetadataBuilder().build();
@@ -79,13 +81,13 @@ public class DB {
 
 
         session.beginTransaction();
-        Zutat sensor = session.load(Zutat.class, input);
+        Zutat zutat = session.load(Zutat.class, input);
         session.flush();
-        return sensor;
+        return zutat;
     }
 
     //Ruft eine Liste aller gespeicherten Zutaten aus der Datenbank ab
-    public static ArrayList<zutat> callAllZutat() {
+    public static ArrayList<Zutat> callAllZutat() {
         StandardServiceRegistry ssr = new StandardServiceRegistryBuilder().configure().build();
 
         Metadata meta = new MetadataSources(ssr).getMetadataBuilder().build();

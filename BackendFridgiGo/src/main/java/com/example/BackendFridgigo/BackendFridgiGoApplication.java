@@ -14,17 +14,17 @@ import java.util.ArrayList;
 
 @SpringBootApplication
 @RestController
-public class BackendFridgigoApplication {
+public class BackendFridgiGoApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BackendFridgigoApplication.class, args);
+        SpringApplication.run(BackendFridgiGoApplication.class, args);
     }
 
     //Gibt eine einzelne Rezept nach ihrer ID zurück
     @GetMapping("/FridgiGo/show")
     @CrossOrigin(origins = "http://localhost:8100")
-    public String viewPflanze(@RequestParam(value = "id", defaultValue = "1") Integer id) {
-        Rezept pflanze = DB.callRezeptById(id);
+    public String viewRezept(@RequestParam(value = "id", defaultValue = "1") Integer id) {
+        Rezept2 rezept = DB.callRezeptById(id);
         return Miscellaneous.MapObject(rezept);
     }
 
@@ -32,80 +32,38 @@ public class BackendFridgigoApplication {
     @GetMapping(value = "/FridgiGo/showall", produces = "application/json")
     @CrossOrigin(origins = "http://localhost:8100")
     public String viewAllRezepte() {
-        ArrayList<Rezept> rezepteList = DB.callAllRezepte();
+        ArrayList<Rezept2> rezepteList = DB.callAllRezepte();
         return Miscellaneous.MapObjectList(rezepteList);
     }
 
     //Persistiert ein Rezept-Objekt mit den eingegebenen Daten; Gibt nur "200" zurück
     @GetMapping("/FridgiGo/addrezept")
     @CrossOrigin(origins = "http://localhost:8100")
-    public void addSensor(@RequestParam(value = "rid") Integer rid,
+    public void addSensor(@RequestParam(value = "rezeptid") Integer rezeptid,
                           @RequestParam(value = "link") String link) {
 
-        Zutat sensor = new Zutat();
-        sensor.setLink(link);
-        sensor.setPID(pid);
-        DB.persist(sensor);
+        Rezept2 rezept = new Rezept2();
+       Zutat.setLink(link);
+        Zutat.setrezeptid(rezeptid);
+        DB.persist(rezeptid);
 
 
     }
 
-    //Gibt das Passwort des eingegebenen Nutzers aus der Datenbank zurück
-    @GetMapping("/planti/getPW")
-    @CrossOrigin(origins = "http://localhost:8100")
-    public String getPW(@RequestParam(value = "name") String username) {
-        User user = DB.callUserByName(username);
-        return Miscellaneous.MapObject(user.getPassword());
-    }
+  
 
-    //Persistiert ein User-Objekt mit den eingegebenen Nutzer-Daten; Gibt nur "200" zurück
-    @GetMapping("/planti/adduser")
+    //Gibt eine Liste aller Rezepte, die eine Zutat haben zurück
+    @GetMapping(value = "/fridgigo/meineRezepte", produces = "application/json")
     @CrossOrigin(origins = "http://localhost:8100")
-    public void addUser(@RequestParam(value = "username") String username,
-                        @RequestParam(value = "pw") String pw) {
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(pw);
-        DB.persist(user);
-    }
-
-    //Gibt eine Liste aller Pflanzen, die einen Sensor haben zurück
-    @GetMapping(value = "/planti/meinePflanzen", produces = "application/json")
-    @CrossOrigin(origins = "http://localhost:8100")
-    public String viewAllMyPlants() {
-        ArrayList<Rezept> pflanzenList = new ArrayList<>();
-        ArrayList<Zutat> sensorList = DB.callAllSensor();
-        for (Zutat sensor : sensorList) {
-            Rezept pflanze = DB.callPflanzeById(sensor.getPID());
-            pflanzenList.add(pflanze);
+    public String viewAllRezepteString() {
+        ArrayList<Rezept2> rezeptList = new ArrayList<>();
+        ArrayList<Zutat> zutatList = DB.callAllZutat();
+        for (Zutat zutat : zutatList) {
+            Rezept2 rezept = DB.callRezeptById(Rezept2.getrezeptid());
+            rezeptList.add(rezept);
         }
-        return Miscellaneous.MapObjectList(pflanzenList);
-    }
-
-    //Gibt einen Dump der von TTN gespeicherten Feuchtigkeitsdaten, versehen mit Zeitstempeln, zurück
-    @GetMapping("/planti/getData")
-    @CrossOrigin(origins = "http://localhost:8100")
-    public String getSensorData(@RequestParam(value = "SID") Integer SID) throws Exception {
-        ArrayList<SData> FinaleListe = new ArrayList<>();
-        String Ausgabe = Miscellaneous.getHTTPOutput(DB.callSensorById(SID).getLink());
-        String[] AusgabenArray = Ausgabe.split("result");
-        for (String s : AusgabenArray) {
-            try {
-                SData sData = new SData();
-                try {
-                    sData.setMoisture(Float.parseFloat(s.substring(s.indexOf("e25") + 5, s.indexOf("e25") + 9).trim()));
-                } catch (NumberFormatException e) {
-                    continue;
-                }
-                String ZeitStr = s.substring(s.indexOf("time") + 7, s.indexOf("time") + 26);
-                LocalDateTime time = LocalDateTime.parse(ZeitStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                long millis = time.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-                sData.setTime(millis);
-                FinaleListe.add(sData);
-            } catch (StringIndexOutOfBoundsException ignored) {
-
-            }
-        }
-        return Miscellaneous.MapObjectList(FinaleListe);
+        return Miscellaneous.MapObjectList(rezeptList);
     }
 }
+
+ 

@@ -1,4 +1,4 @@
-package com.example.BackendFridgiGo;
+package com.example.BackendFridgigo;
 
 // KData = Kategorien Data
 
@@ -22,7 +22,7 @@ public class KData {
         return rezeptid;
     }
 
-    public void setrezeptid(integer rezeptid) {
+    public void setrezeptid(Integer rezeptid) {
         this.rezeptid = rezeptid;
     }
 
